@@ -1,20 +1,20 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
-import { fontFamily } from '@/theme/fonts';
-import { borderRadius, colors, spacing } from '@/theme/tokens';
+import { fontFamily } from "@/theme/fonts";
+import { borderRadius, colors, spacing } from "@/theme/tokens";
 
 export const styles = StyleSheet.create({
   action: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.background,
     borderColor: colors.border,
     borderRadius: borderRadius.large,
     borderWidth: 1,
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing[2],
-    height: 66,
-    justifyContent: 'center',
+    height: 51,
+    justifyContent: "center",
   },
   actionLabel: {
     color: colors.text,
@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
     lineHeight: 24,
   },
   actions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing[3],
     marginTop: spacing[4],
   },
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
     padding: spacing[6],
   },
   emptyState: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.background,
     borderRadius: borderRadius.large,
     minHeight: 120,
@@ -43,7 +43,7 @@ export const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     fontSize: 16,
     lineHeight: 24,
-    textAlign: 'center',
+    textAlign: "center",
   },
   footer: {
     backgroundColor: colors.background,
@@ -52,12 +52,12 @@ export const styles = StyleSheet.create({
     padding: spacing[6],
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.background,
     borderBottomColor: colors.border,
     borderBottomWidth: 1,
-    flexDirection: 'row',
-    paddingBottom: spacing[5],
+    flexDirection: "row",
+    paddingBottom: spacing[3],
     paddingHorizontal: spacing[6],
     paddingTop: spacing[3],
   },
@@ -65,12 +65,12 @@ export const styles = StyleSheet.create({
   heading: {
     color: colors.text,
     fontFamily: fontFamily.extraBold,
-    fontSize: 32,
+    fontSize: 26,
     letterSpacing: -0.8,
     lineHeight: 37,
   },
-  nextDisabled: { backgroundColor: '#E1E7EC' },
-  nextLabelDisabled: { color: '#AAB6C1' },
+  nextDisabled: { backgroundColor: "#E1E7EC" },
+  nextLabelDisabled: { color: "#AAB6C1" },
   screen: { backgroundColor: colors.surface, flex: 1 },
   sectionLabel: {
     color: colors.textPlaceholder,

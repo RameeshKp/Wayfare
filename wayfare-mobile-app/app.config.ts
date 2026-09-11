@@ -2,7 +2,6 @@ import type { ConfigContext, ExpoConfig } from "expo/config";
 
 const androidGoogleMapsApiKey =
   process.env.EXPO_PUBLIC_GOOGLE_MAPS_ANDROID_API_KEY;
-console.log("🚀 ~ androidGoogleMapsApiKey12:", androidGoogleMapsApiKey);
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   const plugins: NonNullable<ExpoConfig["plugins"]> = [

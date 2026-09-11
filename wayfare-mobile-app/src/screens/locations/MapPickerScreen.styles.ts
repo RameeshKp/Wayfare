@@ -5,6 +5,13 @@ import { borderRadius, colors, spacing } from '@/theme/tokens';
 
 export const styles = StyleSheet.create({
   confirm: { marginTop: spacing[4] },
+  error: {
+    color: colors.accent,
+    fontFamily: fontFamily.regular,
+    fontSize: 14,
+    lineHeight: 21,
+    marginTop: spacing[3],
+  },
   controls: {
     backgroundColor: colors.background,
     borderTopLeftRadius: 28,

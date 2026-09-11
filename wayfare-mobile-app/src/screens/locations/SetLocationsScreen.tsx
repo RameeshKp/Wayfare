@@ -11,6 +11,7 @@ import { AppButton } from "@/components/ui/AppButton";
 import { useTrip } from "@/hooks/useTrip";
 import type { RootStackParamList } from "@/navigation/types";
 
+import { SafeAreaView } from "react-native-safe-area-context";
 import { LocationFlowCard } from "./components/LocationFlowCard";
 import { PlaceList } from "./components/PlaceList";
 import { suggestedPlaces } from "./data/places";
@@ -50,7 +51,7 @@ export function SetLocationsScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen}>
       <View style={styles.header}>
         <Pressable
           accessibilityLabel="Go back"
@@ -75,6 +76,7 @@ export function SetLocationsScreen() {
           onClear={(kind) =>
             kind === "pickup" ? setPickup(undefined) : setDestination(undefined)
           }
+          onSelect={(target) => navigation.navigate("PickLocation", { target })}
           onSwap={swapLocations}
           pickup={pickup}
         />
@@ -107,7 +109,8 @@ export function SetLocationsScreen() {
         {activeLocation === "destination" ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyText}>
-              Choose a destination from the map or your saved places.
+              No saved places match that. Keep typing to use it as a custom
+              address.
             </Text>
           </View>
         ) : (
@@ -122,6 +125,6 @@ export function SetLocationsScreen() {
           onPress={() => navigation.navigate("TripReady")}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
