@@ -10,11 +10,11 @@ import TargetSVGComponent from "@/assets/svg/TargetSVGComponent";
 import { AppButton } from "@/components/ui/AppButton";
 import { useTrip } from "@/hooks/useTrip";
 import type { RootStackParamList } from "@/navigation/types";
+import type { LocationPlace } from "@/store/TripContext";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LocationFlowCard } from "./components/LocationFlowCard";
 import { PlaceList } from "./components/PlaceList";
-import { suggestedPlaces } from "./data/places";
 import { useCurrentLocation } from "./hooks/useCurrentLocation";
 import { styles } from "./SetLocationsScreen.styles";
 
@@ -24,16 +24,32 @@ type SetLocationsNavigationProp = NativeStackNavigationProp<
 >;
 type ActiveLocation = "destination" | "pickup";
 
+function areSameLocation(
+  pickup: LocationPlace | undefined,
+  destination: LocationPlace | undefined,
+): boolean {
+  return (
+    pickup !== undefined &&
+    destination !== undefined &&
+    (pickup.id === destination.id ||
+      (pickup.latitude === destination.latitude &&
+        pickup.longitude === destination.longitude))
+  );
+}
+
 export function SetLocationsScreen() {
   const navigation = useNavigation<SetLocationsNavigationProp>();
-  const { destination, pickup, setDestination, setPickup, swapLocations } =
+  const { destination, pickup, recentLocations, setDestination, setPickup, swapLocations } =
     useTrip();
   const { error, getCurrentLocation, isLoading } = useCurrentLocation();
   const activeLocation: ActiveLocation =
     pickup === undefined ? "pickup" : "destination";
-  const canContinue = pickup !== undefined && destination !== undefined;
+  const canContinue =
+    pickup !== undefined &&
+    destination !== undefined &&
+    !areSameLocation(pickup, destination);
 
-  function selectPlace(place: (typeof suggestedPlaces)[number]) {
+  function selectPlace(place: LocationPlace) {
     if (activeLocation === "pickup") {
       setPickup(place);
       return;
@@ -106,15 +122,14 @@ export function SetLocationsScreen() {
         <Text style={styles.sectionLabel}>
           Set as {activeLocation === "pickup" ? "pickup" : "drop-off"}
         </Text>
-        {activeLocation === "destination" ? (
+        {recentLocations.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyText}>
-              No saved places match that. Keep typing to use it as a custom
-              address.
+              Places you choose will appear here for quick access.
             </Text>
           </View>
         ) : (
-          <PlaceList onSelect={selectPlace} places={suggestedPlaces} />
+          <PlaceList onSelect={selectPlace} places={recentLocations} />
         )}
         {error && <Text style={styles.emptyText}>{error}</Text>}
       </ScrollView>

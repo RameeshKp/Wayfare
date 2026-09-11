@@ -16,10 +16,34 @@ function joinAddressParts(parts: Array<string | null | undefined>): string {
   return parts.filter((part): part is string => Boolean(part)).join(', ');
 }
 
-function getLocationName(address: Location.LocationGeocodedAddress, fallbackName: string): string {
-  const candidates = [address.name, address.street, address.district, address.city, address.region];
+function isPlaceName(candidate: string | null | undefined): candidate is string {
+  if (!candidate || !/[A-Za-z\p{L}]/u.test(candidate)) {
+    return false;
+  }
 
-  return candidates.find((candidate) => candidate !== null && candidate !== undefined && /[^\d\s,.-]/.test(candidate)) ?? fallbackName;
+  const normalizedCandidate = candidate.trim();
+  const isHouseOrBuildingLabel = /\b(building|bldg|house|villa|plot|zone|block)\b/i.test(
+    normalizedCandidate,
+  );
+  const isRoadLabel = /\b(avenue|ave|boulevard|blvd|highway|hwy|road|rd|street|st)\.?$/i.test(
+    normalizedCandidate,
+  );
+
+  return !isHouseOrBuildingLabel && !isRoadLabel;
+}
+
+function getLocationName(address: Location.LocationGeocodedAddress, fallbackName: string): string {
+  const placeName = [address.name].find(isPlaceName);
+
+  if (placeName) {
+    return placeName;
+  }
+
+  const areaName = [address.district, address.city, address.subregion, address.region].find(
+    isPlaceName,
+  );
+
+  return areaName ?? fallbackName;
 }
 
 export async function createLocationPlace({

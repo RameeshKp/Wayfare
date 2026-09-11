@@ -1,10 +1,5 @@
-import { useRef, useState } from "react";
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  View
-} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker, Polyline } from "react-native-maps";
@@ -48,6 +43,8 @@ export function RouteViewScreen() {
   const { destination, pickup } = useTrip();
   const [travelMode, setTravelMode] = useState<TravelMode>("Drive");
   const [hasStartedNavigation, setHasStartedNavigation] = useState(false);
+  const [hasMapLayout, setHasMapLayout] = useState(false);
+  const [isMapReady, setIsMapReady] = useState(false);
   const mapReference = useRef<MapView>(null);
 
   if (pickup === undefined || destination === undefined) {
@@ -68,19 +65,35 @@ export function RouteViewScreen() {
       ? Math.max(12, Math.round(distance * 13))
       : Math.max(4, Math.round(distance * 3));
   const routeMode = travelMode === "Walk" ? "walking" : "driving";
-  const { error: routeError, isLoading: isRouteLoading, route } =
-    useRouteDirections(routePickup, routeDestination, routeMode);
+  const {
+    error: routeError,
+    isLoading: isRouteLoading,
+    route,
+  } = useRouteDirections(routePickup, routeDestination, routeMode);
   const displayDuration = route?.durationMinutes ?? routeMinutes;
   const displayDistance = route?.distanceText ?? routeDistance;
+  const formattedDuration = formatDuration(displayDuration);
+  const hasLongDuration = displayDuration >= 60;
+  const trafficMessage =
+    route?.trafficMessage ??
+    (routeMode === "walking"
+      ? "Traffic information is available for driving routes only."
+      : "Live traffic information is unavailable for this route.");
 
-  function fitRouteOnMap() {
-    setTimeout(() => {
+  useEffect(() => {
+    if (!hasMapLayout || !isMapReady) {
+      return undefined;
+    }
+
+    const mapFitTimeout = setTimeout(() => {
       mapReference.current?.fitToCoordinates([routePickup, routeDestination], {
         animated: false,
-        edgePadding: { bottom: 300, left: 56, right: 56, top: 120 },
+        edgePadding: { bottom: 500, left: 48, right: 48, top: 80 },
       });
-    }, 250);
-  }
+    }, 700);
+
+    return () => clearTimeout(mapFitTimeout);
+  }, [hasMapLayout, isMapReady, routeDestination, routePickup]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -99,23 +112,25 @@ export function RouteViewScreen() {
                 0.04,
               ),
             }}
-            onMapReady={fitRouteOnMap}
+            onLayout={() => setHasMapLayout(true)}
+            onMapReady={() => setIsMapReady(true)}
             ref={mapReference}
             style={styles.map}
           >
             {route && (
               <Polyline
                 coordinates={route.coordinates}
+                lineDashPattern={[1, 8]}
                 strokeColor={colors.accent}
                 strokeWidth={4}
               />
             )}
-            <Marker coordinate={routePickup} anchor={{ x: 0.5, y: 0.5 }}>
+            <Marker anchor={{ x: 0.5, y: 0.5 }} coordinate={routePickup}>
               <View style={styles.mapTruck}>
                 <DeliveryTruckSVGComponent />
               </View>
             </Marker>
-            <Marker coordinate={routeDestination} anchor={{ x: 0.5, y: 0.5 }}>
+            <Marker anchor={{ x: 0.5, y: 0.5 }} coordinate={routeDestination}>
               <View style={styles.mapPin}>
                 <LocationSVGComponent />
               </View>
@@ -139,13 +154,13 @@ export function RouteViewScreen() {
               <LayersSVGComponent />
             </Pressable>
           </View>
-        <View style={styles.trafficAlert}>
-          <WarningSVGComponent />
-          <Text style={styles.trafficText}>
-            {isRouteLoading
-              ? "Finding the best route…"
-              : routeError ?? "Heavy traffic near the route"}
-          </Text>
+          <View style={styles.trafficAlert}>
+            <WarningSVGComponent />
+            <Text style={styles.trafficText}>
+              {isRouteLoading
+                ? "Finding the best route…"
+                : (routeError ?? trafficMessage)}
+            </Text>
           </View>
         </View>
 
@@ -155,14 +170,29 @@ export function RouteViewScreen() {
           style={styles.routeCard}
         >
           <View style={styles.routeHandle} />
-          <View style={styles.routeMeta}>
+          <View
+            style={[
+              styles.routeMeta,
+              hasLongDuration && styles.routeMetaLongDuration,
+            ]}
+          >
             <View>
               <Text style={styles.routeName}>Fastest route</Text>
-              <Text style={styles.routeTime}>
-                {formatDuration(displayDuration)}
+              <Text
+                style={[
+                  styles.routeTime,
+                  hasLongDuration && styles.routeTimeLongDuration,
+                ]}
+              >
+                {formattedDuration}
               </Text>
             </View>
-            <Text style={styles.arrival}>
+            <Text
+              style={[
+                styles.arrival,
+                hasLongDuration && styles.arrivalLongDuration,
+              ]}
+            >
               {displayDistance} · arrive{" "}
               {travelMode === "Walk" ? "11:26" : "10:42"}
             </Text>
@@ -190,7 +220,7 @@ export function RouteViewScreen() {
             ))}
           </View>
           <RouteDetails destination={routeDestination} pickup={routePickup} />
-          <RouteSteps distance={displayDistance} />
+          <RouteSteps steps={route?.steps ?? []} />
           <View style={styles.routeSummary} />
         </ScrollView>
       </View>

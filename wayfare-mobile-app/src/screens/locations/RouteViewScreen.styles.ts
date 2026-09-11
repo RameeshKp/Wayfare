@@ -19,6 +19,9 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
   },
+  arrivalLongDuration: {
+    marginTop: spacing[1],
+  },
   backButton: {
     alignItems: 'center',
     backgroundColor: colors.background,
@@ -41,6 +44,13 @@ export const styles = StyleSheet.create({
     borderRadius: borderRadius.large,
     marginTop: spacing[5],
     padding: spacing[4],
+  },
+  emptyStepsText: {
+    color: colors.textMuted,
+    fontFamily: fontFamily.regular,
+    fontSize: 15,
+    lineHeight: 22,
+    marginTop: spacing[3],
   },
   detailsLine: {
     backgroundColor: colors.border,
@@ -166,6 +176,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: spacing[4],
   },
+  routeMetaLongDuration: {
+    alignItems: 'flex-start',
+    flexDirection: 'column',
+  },
   routeName: {
     color: colors.textPlaceholder,
     fontFamily: fontFamily.bold,
@@ -177,6 +191,10 @@ export const styles = StyleSheet.create({
     fontFamily: fontFamily.extraBold,
     fontSize: 42,
     lineHeight: 48,
+  },
+  routeTimeLongDuration: {
+    fontSize: 38,
+    lineHeight: 44,
   },
   row: {
     alignItems: 'center',
@@ -196,6 +214,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     minHeight: 70,
+  },
+  stepContent: {
+    flex: 1,
   },
   stepIcon: {
     alignItems: 'center',

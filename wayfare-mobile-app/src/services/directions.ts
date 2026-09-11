@@ -4,6 +4,13 @@ export type RouteDirections = {
   coordinates: Array<{ latitude: number; longitude: number }>;
   distanceText: string;
   durationMinutes: number;
+  steps: RouteStep[];
+  trafficMessage: string;
+};
+
+export type RouteStep = {
+  distanceText: string;
+  instruction: string;
 };
 
 type RoutesApiResponse = {
@@ -14,7 +21,18 @@ type RoutesApiResponse = {
   routes?: Array<{
     distanceMeters?: number;
     duration?: string;
+    legs?: Array<{
+      steps?: Array<{
+        distanceMeters?: number;
+        navigationInstruction?: { instructions?: string };
+      }>;
+    }>;
     polyline?: { encodedPolyline?: string };
+    travelAdvisory?: {
+      speedReadingIntervals?: Array<{
+        speed?: 'NORMAL' | 'SLOW' | 'TRAFFIC_JAM';
+      }>;
+    };
   }>;
 };
 
@@ -44,6 +62,48 @@ function durationToMinutes(duration: string): number | undefined {
   const seconds = Number.parseFloat(duration.replace(/s$/, ''));
 
   return Number.isFinite(seconds) && seconds > 0 ? seconds / 60 : undefined;
+}
+
+function getRouteSteps(route: NonNullable<RoutesApiResponse['routes']>[number]): RouteStep[] {
+  return (route.legs ?? []).flatMap((leg) =>
+    (leg.steps ?? []).flatMap((step) => {
+      const instruction = step.navigationInstruction?.instructions;
+
+      if (!instruction) {
+        return [];
+      }
+
+      return [{
+        distanceText: formatDistance(step.distanceMeters ?? 0),
+        instruction,
+      }];
+    }),
+  );
+}
+
+function getTrafficMessage(
+  route: NonNullable<RoutesApiResponse['routes']>[number],
+  mode: 'driving' | 'walking',
+): string {
+  if (mode === 'walking') {
+    return 'Traffic information is available for driving routes only.';
+  }
+
+  const speeds = route.travelAdvisory?.speedReadingIntervals?.map((interval) => interval.speed) ?? [];
+
+  if (speeds.includes('TRAFFIC_JAM')) {
+    return 'Heavy traffic on parts of this route.';
+  }
+
+  if (speeds.includes('SLOW')) {
+    return 'Slow traffic on parts of this route.';
+  }
+
+  if (speeds.includes('NORMAL')) {
+    return 'Traffic is moving normally on this route.';
+  }
+
+  return 'Live traffic information is unavailable for this route.';
 }
 
 function decodePolyline(encodedPolyline: string): RouteDirections['coordinates'] {
@@ -91,6 +151,15 @@ export async function getRouteDirections(
     throw new Error('Maps key unavailable.');
   }
 
+  const fieldMask = [
+    'routes.duration',
+    'routes.distanceMeters',
+    'routes.polyline.encodedPolyline',
+    'routes.legs.steps.distanceMeters',
+    'routes.legs.steps.navigationInstruction.instructions',
+    ...(mode === 'driving' ? ['routes.travelAdvisory.speedReadingIntervals'] : []),
+  ].join(',');
+
   const response = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
     body: JSON.stringify({
       computeAlternativeRoutes: false,
@@ -102,6 +171,7 @@ export async function getRouteDirections(
           },
         },
       },
+      extraComputations: mode === 'driving' ? ['TRAFFIC_ON_POLYLINE'] : undefined,
       languageCode: 'en',
       origin: {
         location: {
@@ -118,7 +188,7 @@ export async function getRouteDirections(
     headers: {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': googleMapsAndroidApiKey,
-      'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline',
+      'X-Goog-FieldMask': fieldMask,
     },
     method: 'POST',
   });
@@ -135,5 +205,7 @@ export async function getRouteDirections(
     coordinates: decodePolyline(encodedPolyline),
     distanceText: formatDistance(route.distanceMeters),
     durationMinutes,
+    steps: getRouteSteps(route),
+    trafficMessage: getTrafficMessage(route, mode),
   };
 }

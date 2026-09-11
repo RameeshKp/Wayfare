@@ -1,6 +1,12 @@
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { ReactNode } from 'react';
+
+import {
+  addRecentLocation,
+  loadRecentLocations,
+  persistRecentLocations,
+} from '@/services/recentLocations';
 
 export type LocationPlace = {
   address: string;
@@ -14,6 +20,7 @@ export type LocationPlace = {
 type TripContextValue = {
   destination: LocationPlace | undefined;
   pickup: LocationPlace | undefined;
+  recentLocations: LocationPlace[];
   setDestination: (place: LocationPlace | undefined) => void;
   setPickup: (place: LocationPlace | undefined) => void;
   swapLocations: () => void;
@@ -26,21 +33,58 @@ type TripProviderProps = {
 };
 
 export function TripProvider({ children }: TripProviderProps) {
-  const [pickup, setPickup] = useState<LocationPlace | undefined>(undefined);
-  const [destination, setDestination] = useState<LocationPlace | undefined>(undefined);
+  const [pickup, setPickupState] = useState<LocationPlace | undefined>(undefined);
+  const [destination, setDestinationState] = useState<LocationPlace | undefined>(undefined);
+  const [recentLocations, setRecentLocations] = useState<LocationPlace[]>([]);
+
+  useEffect(() => {
+    void loadRecentLocations().then(setRecentLocations);
+  }, []);
+
+  const rememberLocation = useCallback((place: LocationPlace) => {
+    setRecentLocations((locations) => {
+      const nextLocations = addRecentLocation(locations, place);
+
+      void persistRecentLocations(nextLocations).catch(() => undefined);
+      return nextLocations;
+    });
+  }, []);
+
+  const setPickup = useCallback(
+    (place: LocationPlace | undefined) => {
+      setPickupState(place);
+
+      if (place) {
+        rememberLocation(place);
+      }
+    },
+    [rememberLocation],
+  );
+
+  const setDestination = useCallback(
+    (place: LocationPlace | undefined) => {
+      setDestinationState(place);
+
+      if (place) {
+        rememberLocation(place);
+      }
+    },
+    [rememberLocation],
+  );
 
   const value = useMemo<TripContextValue>(
     () => ({
       destination,
       pickup,
+      recentLocations,
       setDestination,
       setPickup,
       swapLocations: () => {
-        setPickup(destination);
-        setDestination(pickup);
+        setPickupState(destination);
+        setDestinationState(pickup);
       },
     }),
-    [destination, pickup],
+    [destination, pickup, recentLocations, setDestination, setPickup],
   );
 
   return <TripContext.Provider value={value}>{children}</TripContext.Provider>;
