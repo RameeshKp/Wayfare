@@ -1,56 +1,123 @@
-# Welcome to your Expo app 👋
+# Wayfare
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Wayfare is an Expo 57 / React Native trip-planning demo. It includes local account creation and login, pickup and drop-off selection, map pinning, persisted recent locations, route details, turn-by-turn instructions, and live driving-traffic status from Google Routes API.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Local account creation and sign-in backed by AsyncStorage.
+- React Navigation native-stack navigation;
+- Nunito Sans typography and reusable SVG-based UI.
+- Pickup and drop-off selection using current location, map pinning, or recent locations.
+- Four persistent recent locations, stored locally on the device.
+- Reverse geocoding that prioritizes place and area names over road or building numbers.
+- Google Maps route display with endpoint markers, a dotted route line, distance, duration, dynamic arrival time, and available turn-by-turn instructions.
+- Google Routes API traffic-on-polyline status for driving routes.
+- Friendly handling for unavailable routes, Maps API billing/permission failures, and daily quota exhaustion.
+
+## Requirements
+
+- Node.js 22.13 or later.
+- npm.
+- Android Studio with an emulator, or a physical Android device with USB debugging enabled.
+- A Google Cloud project with billing enabled for map and routing functionality.
+
+## Install and run
+
+1. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. Create a local environment file:
 
    ```bash
-   npx expo start
+   cp .env.example .env
    ```
 
-In the output, you'll find options to open the app in a
+3. Add your Google Maps key to `.env`:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```dotenv
+   EXPO_PUBLIC_GOOGLE_MAPS_ANDROID_API_KEY=your_google_maps_api_key
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+4. Build and install the Android development build:
 
-## Get a fresh project
+   ```bash
+   npm run android
+   ```
 
-When you're ready, run:
+5. For later JavaScript-only changes, start Metro and open the installed development build:
 
-```bash
-npm run reset-project
+   ```bash
+   npm start
+   ```
+
+This project uses `expo-dev-client`, so use an installed development build rather than standard Expo Go. Run `npm run android` again after changing native configuration, native dependencies, or the Maps API key.
+
+## Google Cloud setup
+
+Enable billing for your Google Cloud project, then enable:
+
+- **Maps SDK for Android** — renders the map in the Android app.
+- **Routes API** — returns driving/walking routes, route polylines, route steps, and traffic information.
+
+For Android Maps SDK access, restrict the Maps key to this application package:
+
+```text
+com.anonymous.wayfaremobileapp
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Also add the SHA-1 fingerprint used by the debug/development build. Follow the current [Expo SDK 57 react-native-maps instructions](https://docs.expo.dev/versions/v57.0.0/sdk/map-view/) for Android key configuration.
 
-### Other setup steps
+Driving requests enable Google’s traffic-on-polyline data. This requires the Routes API and billing, and uses the higher Routes Preferred pricing tier.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+> Route requests are made from the app for this demo. For a production app, move routing requests to a backend and keep the server-side Routes API key private. Never commit `.env` or an unrestricted key.
 
-## Learn more
+## Commands
 
-To learn more about developing your project with Expo, look at the following resources:
+| Command            | Purpose                                                   |
+| ------------------ | --------------------------------------------------------- |
+| `npm start`        | Starts Expo Metro for the installed development client.   |
+| `npm run android`  | Builds and installs the Android development app.          |
+| `npm run ios`      | Builds and runs the iOS development app.                  |
+| `npm run web`      | Starts the web target; map behavior differs from native.  |
+| `npx tsc --noEmit` | Runs the TypeScript type check.                           |
+| `npm run lint`     | Runs Expo lint when an ESLint configuration is installed. |
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Project structure
 
-## Join the community
+```text
+assets/
+  fonts/                 Nunito Sans font files
+  svg/                   Reusable SVG components
+src/
+  app/                   Root application composition
+  components/ui/         Shared buttons, form fields, and toast
+  hooks/                 Shared hooks
+  navigation/            React Navigation stack and route types
+  screens/
+    auth/                Login and account-creation screens
+    locations/           Set Locations, map picker, and Route View screens
+  services/              Storage, geocoding, maps, and route API clients
+  store/                 Authentication and trip state
+  theme/                 Colors, spacing, and typography tokens
+  utils/                 Formatting and validation helpers
+```
 
-Join our community of developers creating universal apps.
+## Local data and route behavior
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Accounts and signed-in state are stored only on the device via AsyncStorage; there is no backend authentication service.
+- The newest four selected locations are saved as local recent locations.
+- Route failures show a bottom toast, including missing drivable routes, Google Cloud billing/permission errors, and exceeded daily route quota.
+- When Google cannot return a route, Wayfare does not display an arrival time.
+
+## Development conventions
+
+Project conventions are defined in [`skills/wayfare-mobile-architecture/SKILL.md`](skills/wayfare-mobile-architecture/SKILL.md):
+
+- Keep screens, feature components, and feature hooks together.
+- Use TypeScript and typed React Navigation parameters.
+- Put storage, geocoding, and API side effects in `src/services/`.
+- Use theme tokens and colocated `*.styles.ts` files; avoid JSX inline styles.
+- Keep shared UI primitives in `src/components/ui/`.
