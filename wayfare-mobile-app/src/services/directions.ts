@@ -54,7 +54,7 @@ function getRouteErrorMessage(responseData: RoutesApiResponse): string {
     return "Routes API access is not authorized for this app configuration.";
   }
 
-  return "A road route is not available between these locations. Choose another destination or travel mode.";
+  return "We can't find a route there. Try another destination or travel mode.";
 }
 
 function formatDistance(distanceMeters: number): string {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
@@ -9,12 +9,18 @@ type LoginErrors = {
   password?: string;
 };
 
-export function useLoginForm() {
+export function useLoginForm(successMessage?: string) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<LoginErrors>({});
   const { login } = useAuth();
   const { showToast, toast } = useToast();
+
+  useEffect(() => {
+    if (successMessage) {
+      showToast(successMessage, 'success');
+    }
+  }, [showToast, successMessage]);
 
   async function submit(): Promise<boolean> {
     const nextErrors = {

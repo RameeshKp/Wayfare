@@ -203,8 +203,7 @@ export function RouteViewScreen() {
                 hasLongDuration && styles.arrivalLongDuration,
               ]}
             >
-              {displayDistance} · arrive{" "}
-              {arrivalTime}
+              {routeError ? displayDistance : `${displayDistance} · arrive ${arrivalTime}`}
             </Text>
           </View>
           <View style={styles.modes}>

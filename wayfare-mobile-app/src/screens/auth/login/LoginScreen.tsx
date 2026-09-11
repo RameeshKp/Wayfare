@@ -1,8 +1,9 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
 
 import { AppButton } from '@/components/ui/AppButton';
 import { FormTextInput } from '@/components/ui/FormTextInput';
@@ -13,9 +14,11 @@ import { styles } from './LoginScreen.styles';
 import { useLoginForm } from '../hooks/useLoginForm';
 
 type LoginNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
+type LoginRouteProp = RouteProp<RootStackParamList, 'Login'>;
 
 export function LoginScreen() {
   const navigation = useNavigation<LoginNavigationProp>();
+  const route = useRoute<LoginRouteProp>();
   const {
     email,
     errors,
@@ -25,11 +28,11 @@ export function LoginScreen() {
     setPassword,
     submit,
     toast,
-  } = useLoginForm();
+  } = useLoginForm(route.params?.successMessage);
 
   async function handleLogin() {
     if (await submit()) {
-      navigation.navigate('SetLocations');
+      navigation.replace('SetLocations');
     }
   }
 

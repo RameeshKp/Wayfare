@@ -11,29 +11,43 @@ type RouteDetailsProps = {
   pickup: LocationPlace;
 };
 
-export function RouteDetails({ destination, pickup }: RouteDetailsProps) {
-  const [destinationDotY, setDestinationDotY] = useState<number | undefined>(undefined);
-  const [pickupDotY, setPickupDotY] = useState<number | undefined>(undefined);
-  const lineStyle =
-    pickupDotY === undefined || destinationDotY === undefined
-      ? undefined
-      : createDetailsLineStyle(pickupDotY, destinationDotY);
+type RowLayout = {
+  height: number;
+  y: number;
+};
 
-  function setDotPosition(setPosition: (value: number) => void, event: LayoutChangeEvent) {
-    setPosition(event.nativeEvent.layout.y);
+export function RouteDetails({ destination, pickup }: RouteDetailsProps) {
+  const [destinationRowLayout, setDestinationRowLayout] = useState<RowLayout | undefined>(undefined);
+  const [pickupRowLayout, setPickupRowLayout] = useState<RowLayout | undefined>(undefined);
+  const lineStyle =
+    pickupRowLayout === undefined || destinationRowLayout === undefined
+      ? undefined
+      : createDetailsLineStyle(
+          pickupRowLayout.y,
+          pickupRowLayout.height,
+          destinationRowLayout.y,
+          destinationRowLayout.height,
+        );
+
+  function setRowLayout(
+    setLayout: (layout: RowLayout) => void,
+    event: LayoutChangeEvent,
+  ) {
+    const { height, y } = event.nativeEvent.layout;
+    setLayout({ height, y });
   }
 
   return (
     <View style={styles.detailsCard}>
-      <View style={styles.row}>
-        <View onLayout={(event) => setDotPosition(setPickupDotY, event)} style={styles.pickupDot} />
+      {lineStyle && <View style={[styles.detailsLine, lineStyle]} />}
+      <View onLayout={(event) => setRowLayout(setPickupRowLayout, event)} style={styles.row}>
+        <View style={styles.pickupDot} />
         <Text numberOfLines={1} style={styles.rowText}>{pickup.name} · {pickup.address}</Text>
       </View>
-      <View style={styles.row}>
-        <View onLayout={(event) => setDotPosition(setDestinationDotY, event)} style={styles.destinationDot} />
+      <View onLayout={(event) => setRowLayout(setDestinationRowLayout, event)} style={styles.row}>
+        <View style={styles.destinationDot} />
         <Text numberOfLines={1} style={styles.rowText}>{destination.name} · {destination.address}</Text>
       </View>
-      {lineStyle && <View style={[styles.detailsLine, lineStyle]} />}
     </View>
   );
 }

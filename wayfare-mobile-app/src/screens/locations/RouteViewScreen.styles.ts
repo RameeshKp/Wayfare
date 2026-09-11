@@ -5,12 +5,18 @@ import { borderRadius, colors, spacing } from "@/theme/tokens";
 
 export function createDetailsLineStyle(
   pickupDotY: number,
+  pickupRowHeight: number,
   destinationDotY: number,
+  destinationRowHeight: number,
 ) {
+  const pickupCenterY = pickupDotY + pickupRowHeight / 2;
+  const destinationCenterY = destinationDotY + destinationRowHeight / 2;
+  const dotRadius = 6;
+
   return StyleSheet.create({
     detailsLine: {
-      height: Math.max(0, destinationDotY - pickupDotY - 12),
-      top: pickupDotY + 12,
+      height: Math.max(0, destinationCenterY - pickupCenterY - dotRadius * 2),
+      top: pickupCenterY + dotRadius,
     },
   }).detailsLine;
 }
@@ -57,9 +63,10 @@ export const styles = StyleSheet.create({
   },
   detailsLine: {
     backgroundColor: colors.border,
-    left: 27,
+    left: spacing[4] + 6,
     position: "absolute",
     width: 2,
+    zIndex: 0,
   },
   destinationDot: {
     backgroundColor: colors.text,
@@ -203,6 +210,8 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     minHeight: 42,
+    position: "relative",
+    zIndex: 1,
   },
   rowText: {
     color: colors.text,

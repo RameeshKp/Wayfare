@@ -18,7 +18,7 @@ export function useCreateAccountForm() {
   const { createAccount } = useAuth();
   const { showToast, toast } = useToast();
 
-  async function submit(): Promise<void> {
+  async function submit(): Promise<boolean> {
     const passwordError = getPasswordError(password);
     const nextErrors = {
       email: getEmailError(email),
@@ -45,21 +45,21 @@ export function useCreateAccountForm() {
         showToast(toastError, 'error');
       }
 
-      return;
+      return false;
     }
 
     const accountWasSaved = await createAccount({ email: email.trim().toLowerCase(), password });
 
     if (!accountWasSaved) {
       showToast('We could not save your account. Please try again.', 'error');
-      return;
+      return false;
     }
 
     setEmail('');
     setPassword('');
     setConfirmPassword('');
     setErrors({});
-    showToast('Your account has been created. You can now log in.', 'success');
+    return true;
   }
 
   return {

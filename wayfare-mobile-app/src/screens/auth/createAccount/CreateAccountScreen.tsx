@@ -28,10 +28,18 @@ export function CreateAccountScreen() {
     toast,
   } = useCreateAccountForm();
 
+  async function handleCreateAccount() {
+    if (await submit()) {
+      navigation.replace('Login', {
+        successMessage: 'Your account has been created. You can now log in.',
+      });
+    }
+  }
+
   return (
     <AuthLayout
       footerActionLabel="Log in"
-      footerContent={<AppButton label="Create an account" onPress={() => void submit()} />}
+      footerContent={<AppButton label="Create an account" onPress={() => void handleCreateAccount()} />}
       footerPrompt="Already have an account?"
       onFooterAction={() => navigation.goBack()}
       subtitle="Create an account to start planning your next trip."

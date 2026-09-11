@@ -67,11 +67,6 @@ export function SetLocationsScreen() {
   }
 
   function handleBack() {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-      return;
-    }
-
     if (Platform.OS === "android") {
       BackHandler.exitApp();
     }
