@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { BackHandler, Platform, Pressable, ScrollView, Text, View } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -66,13 +66,24 @@ export function SetLocationsScreen() {
     }
   }
 
+  function handleBack() {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return;
+    }
+
+    if (Platform.OS === "android") {
+      BackHandler.exitApp();
+    }
+  }
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.header}>
         <Pressable
           accessibilityLabel="Go back"
           accessibilityRole="button"
-          onPress={() => navigation.goBack()}
+          onPress={handleBack}
         >
           <BackButtonSVGComponent />
         </Pressable>

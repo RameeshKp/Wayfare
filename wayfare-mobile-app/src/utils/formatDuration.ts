@@ -17,3 +17,12 @@ export function formatDuration(totalMinutes: number): string {
 
   return remainingHours === 0 ? `${days} day${days === 1 ? '' : 's'}` : `${days} day${days === 1 ? '' : 's'} ${remainingHours} hr`;
 }
+
+export function formatArrivalTime(totalMinutes: number, departureTime = new Date()): string {
+  const arrivalTime = new Date(departureTime.getTime() + Math.round(totalMinutes) * 60_000);
+
+  return arrivalTime.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}

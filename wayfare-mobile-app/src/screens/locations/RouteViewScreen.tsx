@@ -15,7 +15,7 @@ import WarningSVGComponent from "@/assets/svg/WarningSVGComponent";
 import { useTrip } from "@/hooks/useTrip";
 import type { RootStackParamList } from "@/navigation/types";
 import { colors } from "@/theme/tokens";
-import { formatDuration } from "@/utils/formatDuration";
+import { formatArrivalTime, formatDuration } from "@/utils/formatDuration";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RouteDetails } from "./components/RouteDetails";
@@ -73,6 +73,7 @@ export function RouteViewScreen() {
   const displayDuration = route?.durationMinutes ?? routeMinutes;
   const displayDistance = route?.distanceText ?? routeDistance;
   const formattedDuration = formatDuration(displayDuration);
+  const arrivalTime = formatArrivalTime(displayDuration);
   const hasLongDuration = displayDuration >= 60;
   const trafficMessage =
     route?.trafficMessage ??
@@ -194,7 +195,7 @@ export function RouteViewScreen() {
               ]}
             >
               {displayDistance} · arrive{" "}
-              {travelMode === "Walk" ? "11:26" : "10:42"}
+              {arrivalTime}
             </Text>
           </View>
           <View style={styles.modes}>

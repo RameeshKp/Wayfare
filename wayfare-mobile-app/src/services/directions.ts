@@ -1,4 +1,4 @@
-import { googleMapsAndroidApiKey } from '@/services/mapsConfig';
+import { googleMapsAndroidApiKey } from "@/services/mapsConfig";
 
 export type RouteDirections = {
   coordinates: Array<{ latitude: number; longitude: number }>;
@@ -30,7 +30,7 @@ type RoutesApiResponse = {
     polyline?: { encodedPolyline?: string };
     travelAdvisory?: {
       speedReadingIntervals?: Array<{
-        speed?: 'NORMAL' | 'SLOW' | 'TRAFFIC_JAM';
+        speed?: "NORMAL" | "SLOW" | "TRAFFIC_JAM";
       }>;
     };
   }>;
@@ -39,15 +39,15 @@ type RoutesApiResponse = {
 function getRouteErrorMessage(responseData: RoutesApiResponse): string {
   const errorMessage = responseData.error?.message?.toLowerCase();
 
-  if (errorMessage?.includes('billing')) {
-    return 'Google Maps billing must be enabled before route directions can be shown.';
+  if (errorMessage?.includes("billing")) {
+    return "Google Maps billing must be enabled before route directions can be shown.";
   }
 
-  if (responseData.error?.status === 'PERMISSION_DENIED') {
-    return 'Routes API access is not authorized for this app configuration.';
+  if (responseData.error?.status === "PERMISSION_DENIED") {
+    return "Routes API access is not authorized for this app configuration.";
   }
 
-  return 'A road route is not available between these locations. Choose another destination or travel mode.';
+  return "A road route is not available between these locations. Choose another destination or travel mode.";
 }
 
 function formatDistance(distanceMeters: number): string {
@@ -59,12 +59,14 @@ function formatDistance(distanceMeters: number): string {
 }
 
 function durationToMinutes(duration: string): number | undefined {
-  const seconds = Number.parseFloat(duration.replace(/s$/, ''));
+  const seconds = Number.parseFloat(duration.replace(/s$/, ""));
 
   return Number.isFinite(seconds) && seconds > 0 ? seconds / 60 : undefined;
 }
 
-function getRouteSteps(route: NonNullable<RoutesApiResponse['routes']>[number]): RouteStep[] {
+function getRouteSteps(
+  route: NonNullable<RoutesApiResponse["routes"]>[number],
+): RouteStep[] {
   return (route.legs ?? []).flatMap((leg) =>
     (leg.steps ?? []).flatMap((step) => {
       const instruction = step.navigationInstruction?.instructions;
@@ -73,41 +75,48 @@ function getRouteSteps(route: NonNullable<RoutesApiResponse['routes']>[number]):
         return [];
       }
 
-      return [{
-        distanceText: formatDistance(step.distanceMeters ?? 0),
-        instruction,
-      }];
+      return [
+        {
+          distanceText: formatDistance(step.distanceMeters ?? 0),
+          instruction,
+        },
+      ];
     }),
   );
 }
 
 function getTrafficMessage(
-  route: NonNullable<RoutesApiResponse['routes']>[number],
-  mode: 'driving' | 'walking',
+  route: NonNullable<RoutesApiResponse["routes"]>[number],
+  mode: "driving" | "walking",
 ): string {
-  if (mode === 'walking') {
-    return 'Traffic information is available for driving routes only.';
+  if (mode === "walking") {
+    return "Traffic information is available for driving routes only.";
   }
 
-  const speeds = route.travelAdvisory?.speedReadingIntervals?.map((interval) => interval.speed) ?? [];
+  const speeds =
+    route.travelAdvisory?.speedReadingIntervals?.map(
+      (interval) => interval.speed,
+    ) ?? [];
 
-  if (speeds.includes('TRAFFIC_JAM')) {
-    return 'Heavy traffic on parts of this route.';
+  if (speeds.includes("TRAFFIC_JAM")) {
+    return "Heavy traffic on parts of this route.";
   }
 
-  if (speeds.includes('SLOW')) {
-    return 'Slow traffic on parts of this route.';
+  if (speeds.includes("SLOW")) {
+    return "Slow traffic on parts of this route.";
   }
 
-  if (speeds.includes('NORMAL')) {
-    return 'Traffic is moving normally on this route.';
+  if (speeds.includes("NORMAL")) {
+    return "Traffic is moving normally on this route.";
   }
 
-  return 'Live traffic information is unavailable for this route.';
+  return "Live traffic information is unavailable for this route.";
 }
 
-function decodePolyline(encodedPolyline: string): RouteDirections['coordinates'] {
-  const coordinates: RouteDirections['coordinates'] = [];
+function decodePolyline(
+  encodedPolyline: string,
+): RouteDirections["coordinates"] {
+  const coordinates: RouteDirections["coordinates"] = [];
   let index = 0;
   let latitude = 0;
   let longitude = 0;
@@ -145,59 +154,72 @@ function decodePolyline(encodedPolyline: string): RouteDirections['coordinates']
 export async function getRouteDirections(
   origin: { latitude: number; longitude: number },
   destination: { latitude: number; longitude: number },
-  mode: 'driving' | 'walking',
+  mode: "driving" | "walking",
 ): Promise<RouteDirections> {
   if (!googleMapsAndroidApiKey) {
-    throw new Error('Maps key unavailable.');
+    throw new Error("Maps key unavailable.");
   }
 
   const fieldMask = [
-    'routes.duration',
-    'routes.distanceMeters',
-    'routes.polyline.encodedPolyline',
-    'routes.legs.steps.distanceMeters',
-    'routes.legs.steps.navigationInstruction.instructions',
-    ...(mode === 'driving' ? ['routes.travelAdvisory.speedReadingIntervals'] : []),
-  ].join(',');
+    "routes.duration",
+    "routes.distanceMeters",
+    "routes.polyline.encodedPolyline",
+    "routes.legs.steps.distanceMeters",
+    "routes.legs.steps.navigationInstruction.instructions",
+    ...(mode === "driving"
+      ? ["routes.travelAdvisory.speedReadingIntervals"]
+      : []),
+  ].join(",");
 
-  const response = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
-    body: JSON.stringify({
-      computeAlternativeRoutes: false,
-      destination: {
-        location: {
-          latLng: {
-            latitude: destination.latitude,
-            longitude: destination.longitude,
+  const response = await fetch(
+    "https://routes.googleapis.com/directions/v2:computeRoutes",
+    {
+      body: JSON.stringify({
+        computeAlternativeRoutes: false,
+        destination: {
+          location: {
+            latLng: {
+              latitude: destination.latitude,
+              longitude: destination.longitude,
+            },
           },
         },
-      },
-      extraComputations: mode === 'driving' ? ['TRAFFIC_ON_POLYLINE'] : undefined,
-      languageCode: 'en',
-      origin: {
-        location: {
-          latLng: {
-            latitude: origin.latitude,
-            longitude: origin.longitude,
+        extraComputations:
+          mode === "driving" ? ["TRAFFIC_ON_POLYLINE"] : undefined,
+        languageCode: "en",
+        origin: {
+          location: {
+            latLng: {
+              latitude: origin.latitude,
+              longitude: origin.longitude,
+            },
           },
         },
+        routingPreference: mode === "driving" ? "TRAFFIC_AWARE" : undefined,
+        travelMode: mode === "driving" ? "DRIVE" : "WALK",
+        units: "METRIC",
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": googleMapsAndroidApiKey,
+        "X-Goog-FieldMask": fieldMask,
       },
-      routingPreference: mode === 'driving' ? 'TRAFFIC_AWARE' : undefined,
-      travelMode: mode === 'driving' ? 'DRIVE' : 'WALK',
-      units: 'METRIC',
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Goog-Api-Key': googleMapsAndroidApiKey,
-      'X-Goog-FieldMask': fieldMask,
+      method: "POST",
     },
-    method: 'POST',
-  });
+  );
   const responseData = (await response.json()) as RoutesApiResponse;
   const route = responseData.routes?.[0];
-  const durationMinutes = route?.duration ? durationToMinutes(route.duration) : undefined;
+  const durationMinutes = route?.duration
+    ? durationToMinutes(route.duration)
+    : undefined;
   const encodedPolyline = route?.polyline?.encodedPolyline;
 
-  if (!response.ok || !route?.distanceMeters || !durationMinutes || !encodedPolyline) {
+  if (
+    !response.ok ||
+    !route?.distanceMeters ||
+    !durationMinutes ||
+    !encodedPolyline
+  ) {
     throw new Error(getRouteErrorMessage(responseData));
   }
 

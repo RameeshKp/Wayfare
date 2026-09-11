@@ -1,9 +1,12 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
-import { fontFamily } from '@/theme/fonts';
-import { borderRadius, colors, spacing } from '@/theme/tokens';
+import { fontFamily } from "@/theme/fonts";
+import { borderRadius, colors, spacing } from "@/theme/tokens";
 
-export function createDetailsLineStyle(pickupDotY: number, destinationDotY: number) {
+export function createDetailsLineStyle(
+  pickupDotY: number,
+  destinationDotY: number,
+) {
   return StyleSheet.create({
     detailsLine: {
       height: Math.max(0, destinationDotY - pickupDotY - 12),
@@ -23,18 +26,18 @@ export const styles = StyleSheet.create({
     marginTop: spacing[1],
   },
   backButton: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.background,
     borderRadius: borderRadius.large,
     height: 56,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 56,
   },
   controlRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     left: spacing[5],
-    position: 'absolute',
+    position: "absolute",
     right: spacing[5],
     top: spacing[5],
   },
@@ -55,7 +58,7 @@ export const styles = StyleSheet.create({
   detailsLine: {
     backgroundColor: colors.border,
     left: 27,
-    position: 'absolute',
+    position: "absolute",
     width: 2,
   },
   destinationDot: {
@@ -72,22 +75,22 @@ export const styles = StyleSheet.create({
     padding: spacing[5],
   },
   footerButton: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.accent,
     borderRadius: borderRadius.large,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing[3],
     height: 72,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   footerButtonPressed: { opacity: 0.85 },
   map: { flex: 1 },
   mapArea: { flex: 1 },
   mapFallback: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.surface,
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: spacing[6],
   },
   mapFallbackText: {
@@ -95,39 +98,39 @@ export const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     fontSize: 16,
     lineHeight: 24,
-    textAlign: 'center',
+    textAlign: "center",
   },
   mapPin: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.text,
     borderColor: colors.background,
     borderRadius: 22,
     borderWidth: 2,
     height: 44,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 44,
   },
   mapTruck: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.accent,
     borderColor: colors.background,
     borderRadius: 22,
     borderWidth: 2,
     height: 44,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 44,
   },
   modeButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderColor: colors.border,
     borderRadius: borderRadius.large,
     borderWidth: 1,
     flex: 1,
-    height: 56,
-    justifyContent: 'center',
+    height: 43,
+    justifyContent: "center",
   },
   modeButtonActive: {
-    backgroundColor: '#FFF2ED',
+    backgroundColor: "#FFF2ED",
     borderColor: colors.accent,
   },
   modeLabel: {
@@ -138,7 +141,7 @@ export const styles = StyleSheet.create({
   },
   modeLabelActive: { color: colors.accent },
   modes: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing[2],
     marginTop: spacing[5],
   },
@@ -154,9 +157,9 @@ export const styles = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     bottom: 0,
-    height: '58%',
-    position: 'absolute',
-    width: '100%',
+    height: "58%",
+    position: "absolute",
+    width: "100%",
   },
   routeCardContent: {
     paddingBottom: spacing[5],
@@ -164,21 +167,21 @@ export const styles = StyleSheet.create({
     paddingTop: spacing[3],
   },
   routeHandle: {
-    alignSelf: 'center',
+    alignSelf: "center",
     backgroundColor: colors.border,
     borderRadius: 2,
     height: 4,
     width: 48,
   },
   routeMeta: {
-    alignItems: 'flex-end',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "flex-end",
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: spacing[4],
   },
   routeMetaLongDuration: {
-    alignItems: 'flex-start',
-    flexDirection: 'column',
+    alignItems: "flex-start",
+    flexDirection: "column",
   },
   routeName: {
     color: colors.textPlaceholder,
@@ -189,7 +192,7 @@ export const styles = StyleSheet.create({
   routeTime: {
     color: colors.text,
     fontFamily: fontFamily.extraBold,
-    fontSize: 42,
+    fontSize: 34,
     lineHeight: 48,
   },
   routeTimeLongDuration: {
@@ -197,8 +200,8 @@ export const styles = StyleSheet.create({
     lineHeight: 44,
   },
   row: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     minHeight: 42,
   },
   rowText: {
@@ -211,19 +214,19 @@ export const styles = StyleSheet.create({
   routeSummary: { paddingBottom: spacing[5] },
   screen: { backgroundColor: colors.surface, flex: 1 },
   step: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     minHeight: 70,
   },
   stepContent: {
     flex: 1,
   },
   stepIcon: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.surface,
     borderRadius: 22,
     height: 44,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginRight: spacing[3],
     width: 44,
   },
@@ -241,16 +244,16 @@ export const styles = StyleSheet.create({
     lineHeight: 24,
   },
   trafficAlert: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.text,
     borderRadius: borderRadius.large,
     bottom: 242,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing[2],
     left: spacing[5],
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
-    position: 'absolute',
+    position: "absolute",
   },
   trafficText: {
     color: colors.background,
