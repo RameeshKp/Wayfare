@@ -4,6 +4,12 @@ import { fontFamily } from "@/theme/fonts";
 import { borderRadius, colors, spacing } from "@/theme/tokens";
 
 export const styles = StyleSheet.create({
+  backButton: {
+    alignItems: "center",
+    height: 30,
+    justifyContent: "center",
+    width: 30,
+  },
   action: {
     alignItems: "center",
     backgroundColor: colors.background,
@@ -61,7 +67,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: spacing[6],
     paddingTop: spacing[3],
   },
-  headerCopy: { marginLeft: spacing[5] },
+  headerCopy: { marginLeft: spacing[1] },
   heading: {
     color: colors.text,
     fontFamily: fontFamily.extraBold,

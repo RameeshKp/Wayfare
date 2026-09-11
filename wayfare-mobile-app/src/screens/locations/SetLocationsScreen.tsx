@@ -1,6 +1,7 @@
+import { useCallback } from "react";
 import { BackHandler, Platform, Pressable, ScrollView, Text, View } from "react-native";
 
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -66,11 +67,26 @@ export function SetLocationsScreen() {
     }
   }
 
-  function handleBack() {
+  const handleBack = useCallback(() => {
     if (Platform.OS === "android") {
       BackHandler.exitApp();
     }
-  }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS !== "android") {
+        return undefined;
+      }
+
+      const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+        handleBack();
+        return true;
+      });
+
+      return () => subscription.remove();
+    }, [handleBack]),
+  );
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -79,6 +95,7 @@ export function SetLocationsScreen() {
           accessibilityLabel="Go back"
           accessibilityRole="button"
           onPress={handleBack}
+          style={styles.backButton}
         >
           <BackButtonSVGComponent />
         </Pressable>
