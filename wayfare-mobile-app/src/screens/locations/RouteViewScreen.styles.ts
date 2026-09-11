@@ -87,7 +87,7 @@ export const styles = StyleSheet.create({
     borderRadius: borderRadius.large,
     flexDirection: "row",
     gap: spacing[3],
-    height: 72,
+    height: 56,
     justifyContent: "center",
   },
   footerButtonPressed: { opacity: 0.85 },
