@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: spacing[6],
   },
   buttonDisabled: {
-    opacity: 0.55,
+    backgroundColor: '#E1E7EC',
   },
   buttonPressed: {
     opacity: 0.85,
@@ -23,5 +23,8 @@ export const styles = StyleSheet.create({
     fontFamily: fontFamily.extraBold,
     fontSize: 17,
     lineHeight: 26,
+  },
+  labelDisabled: {
+    color: '#AAB6C1',
   },
 });

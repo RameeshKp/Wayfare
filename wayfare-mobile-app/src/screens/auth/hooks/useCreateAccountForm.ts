@@ -18,7 +18,7 @@ export function useCreateAccountForm() {
   const { createAccount } = useAuth();
   const { showToast, toast } = useToast();
 
-  function submit() {
+  async function submit(): Promise<void> {
     const passwordError = getPasswordError(password);
     const nextErrors = {
       email: getEmailError(email),
@@ -48,7 +48,13 @@ export function useCreateAccountForm() {
       return;
     }
 
-    createAccount({ email: email.trim().toLowerCase(), password });
+    const accountWasSaved = await createAccount({ email: email.trim().toLowerCase(), password });
+
+    if (!accountWasSaved) {
+      showToast('We could not save your account. Please try again.', 'error');
+      return;
+    }
+
     setEmail('');
     setPassword('');
     setConfirmPassword('');

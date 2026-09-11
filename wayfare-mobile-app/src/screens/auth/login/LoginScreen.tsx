@@ -27,10 +27,16 @@ export function LoginScreen() {
     toast,
   } = useLoginForm();
 
+  async function handleLogin() {
+    if (await submit()) {
+      navigation.navigate('SetLocations');
+    }
+  }
+
   return (
     <AuthLayout
       footerActionLabel="Create an account"
-      footerContent={<AppButton label="Log in" onPress={submit} />}
+      footerContent={<AppButton label="Log in" onPress={() => void handleLogin()} />}
       footerPrompt="New to Wayfare?"
       onFooterAction={() => navigation.navigate('CreateAccount')}
       subtitle="Log in to plan a trip and follow your route turn by turn."

@@ -31,7 +31,7 @@ export function CreateAccountScreen() {
   return (
     <AuthLayout
       footerActionLabel="Log in"
-      footerContent={<AppButton label="Create an account" onPress={submit} />}
+      footerContent={<AppButton label="Create an account" onPress={() => void submit()} />}
       footerPrompt="Already have an account?"
       onFooterAction={() => navigation.goBack()}
       subtitle="Create an account to start planning your next trip."

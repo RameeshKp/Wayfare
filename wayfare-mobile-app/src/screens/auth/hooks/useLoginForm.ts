@@ -16,7 +16,7 @@ export function useLoginForm() {
   const { login } = useAuth();
   const { showToast, toast } = useToast();
 
-  function submit() {
+  async function submit(): Promise<boolean> {
     const nextErrors = {
       email: getEmailError(email),
       password: getPasswordError(password),
@@ -26,25 +26,31 @@ export function useLoginForm() {
 
     if (nextErrors.email || nextErrors.password) {
       showToast(nextErrors.email ?? nextErrors.password ?? 'Check your details and try again.', 'error');
-      return;
+      return false;
     }
 
-    const loginResult = login({ email: email.trim().toLowerCase(), password });
+    const loginResult = await login({ email: email.trim().toLowerCase(), password });
 
     if (loginResult === 'noAccount') {
       showToast('Create an account before logging in.', 'error');
-      return;
+      return false;
     }
 
     if (loginResult === 'invalidCredentials') {
       showToast('Your email or password is incorrect.', 'error');
-      return;
+      return false;
+    }
+
+    if (loginResult === 'storageError') {
+      showToast('We could not save your signed-in session. Please try again.', 'error');
+      return false;
     }
 
     setEmail('');
     setPassword('');
     setErrors({});
     showToast('Welcome back. Your trip planner is ready.', 'success');
+    return true;
   }
 
   function requestPasswordReset() {
