@@ -3,5 +3,5 @@ export type RootStackParamList = {
   Login: undefined;
   PickLocation: { target: 'destination' | 'pickup' };
   SetLocations: undefined;
-  TripReady: undefined;
+  RouteView: undefined;
 };

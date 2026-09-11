@@ -122,7 +122,7 @@ export function SetLocationsScreen() {
         <AppButton
           disabled={!canContinue}
           label="Next"
-          onPress={() => navigation.navigate("TripReady")}
+          onPress={() => navigation.navigate("RouteView")}
         />
       </View>
     </SafeAreaView>

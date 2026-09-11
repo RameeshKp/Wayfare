@@ -5,7 +5,7 @@ import { CreateAccountScreen } from '@/screens/auth/createAccount/CreateAccountS
 import { LoginScreen } from '@/screens/auth/login/LoginScreen';
 import { SetLocationsScreen } from '@/screens/locations/SetLocationsScreen';
 import { MapPickerScreen } from '@/screens/locations/MapPickerScreen';
-import { TripReadyScreen } from '@/screens/locations/TripReadyScreen';
+import { RouteViewScreen } from '@/screens/locations/RouteViewScreen';
 
 import type { RootStackParamList } from './types';
 
@@ -24,7 +24,7 @@ export function RootNavigator() {
       <RootStack.Screen component={CreateAccountScreen} name="CreateAccount" />
       <RootStack.Screen component={SetLocationsScreen} name="SetLocations" />
       <RootStack.Screen component={MapPickerScreen} name="PickLocation" />
-      <RootStack.Screen component={TripReadyScreen} name="TripReady" />
+      <RootStack.Screen component={RouteViewScreen} name="RouteView" />
     </RootStack.Navigator>
   );
 }
