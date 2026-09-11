@@ -1,8 +1,9 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 
-import { useAppFonts } from '@/hooks/useAppFonts';
-import { RootNavigator } from '@/navigation/RootNavigator';
+import { useAppFonts } from "@/hooks/useAppFonts";
+import { RootNavigator } from "@/navigation/RootNavigator";
+import { AuthProvider } from "@/store/AuthContext";
 
 export default function WayfareApp() {
   const [fontsLoaded, fontError] = useAppFonts();
@@ -12,9 +13,11 @@ export default function WayfareApp() {
   }
 
   return (
-    <NavigationContainer>
-      <StatusBar style="dark" />
-      <RootNavigator />
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <StatusBar style="dark" />
+        <RootNavigator />
+      </NavigationContainer>
+    </AuthProvider>
   );
 }
