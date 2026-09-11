@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export type Toast = {
   message: string;
@@ -20,9 +20,9 @@ export function useToast() {
     return () => clearTimeout(timer);
   }, [toast]);
 
-  function showToast(message: string, variant: Toast['variant']) {
+  const showToast = useCallback((message: string, variant: Toast['variant']) => {
     setToast({ message, variant });
-  }
+  }, []);
 
   return { showToast, toast };
 }

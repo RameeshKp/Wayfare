@@ -39,6 +39,13 @@ type RoutesApiResponse = {
 function getRouteErrorMessage(responseData: RoutesApiResponse): string {
   const errorMessage = responseData.error?.message?.toLowerCase();
 
+  if (
+    responseData.error?.status === "RESOURCE_EXHAUSTED" ||
+    errorMessage?.includes("quota exceeded")
+  ) {
+    return "Today's route request limit has been reached. Please try again tomorrow.";
+  }
+
   if (errorMessage?.includes("billing")) {
     return "Google Maps billing must be enabled before route directions can be shown.";
   }

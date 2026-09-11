@@ -12,7 +12,9 @@ import LayersSVGComponent from "@/assets/svg/LayersSVGComponent";
 import LocationSVGComponent from "@/assets/svg/LocationSVGComponent";
 import SendSVGComponent from "@/assets/svg/SendSVGComponent";
 import WarningSVGComponent from "@/assets/svg/WarningSVGComponent";
+import { Toast } from "@/components/ui/Toast";
 import { useTrip } from "@/hooks/useTrip";
+import { useToast } from "@/hooks/useToast";
 import type { RootStackParamList } from "@/navigation/types";
 import { colors } from "@/theme/tokens";
 import { formatArrivalTime, formatDuration } from "@/utils/formatDuration";
@@ -46,6 +48,7 @@ export function RouteViewScreen() {
   const [hasMapLayout, setHasMapLayout] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
   const mapReference = useRef<MapView>(null);
+  const { showToast, toast } = useToast();
 
   if (pickup === undefined || destination === undefined) {
     navigation.goBack();
@@ -95,6 +98,12 @@ export function RouteViewScreen() {
 
     return () => clearTimeout(mapFitTimeout);
   }, [hasMapLayout, isMapReady, routeDestination, routePickup]);
+
+  useEffect(() => {
+    if (routeError) {
+      showToast(routeError, "error");
+    }
+  }, [routeError, showToast]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -160,7 +169,7 @@ export function RouteViewScreen() {
             <Text style={styles.trafficText}>
               {isRouteLoading
                 ? "Finding the best route…"
-                : (routeError ?? trafficMessage)}
+                : (routeError ? "Route unavailable" : trafficMessage)}
             </Text>
           </View>
         </View>
@@ -241,6 +250,7 @@ export function RouteViewScreen() {
           </Text>
         </Pressable>
       </View>
+      <Toast toast={toast} />
     </SafeAreaView>
   );
 }
