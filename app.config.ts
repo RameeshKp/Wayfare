@@ -53,6 +53,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       output: "single",
       favicon: "./assets/images/favicon.png",
     },
+    extra: {
+      ...config.extra,
+      eas: {
+        projectId: "adff5c05-0591-4843-9130-a3b8eb4d502a",
+      },
+    },
     plugins,
     experiments: {
       reactCompiler: true,
